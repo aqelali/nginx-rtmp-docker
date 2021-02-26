@@ -1,9 +1,9 @@
 # Dockerfile for a simple Nginx stream replicator
 
 # Software versions to build
-ARG ALPINE_VERSION=alpine:3.8
-ARG FFMPEG_VERSION=4.2.2
-ARG NGINX_VERSION=1.16.1
+ARG ALPINE_VERSION=alpine:3.13
+ARG FFMPEG_VERSION=4.3.2
+ARG NGINX_VERSION=1.19.7
 ARG NGINX_RTMP_MODULE_VERSION=741e0af3cea9b17e2c5f6a2c40920dceb758ae5e
 ARG PCRE_VERSION=8.44
 
@@ -33,7 +33,7 @@ RUN mkdir -p /build && \
 # Build a minimal version of nginx
 RUN cd /build/nginx && \
     ./configure \
-    --build=codingtom/nginx-rtmp-docker \
+    --build=aqelali/nginx-rtmp-docker \
     --prefix=/etc/nginx \
     --with-cc-opt="-static -static-libgcc" \
     --sbin-path=/usr/local/sbin/nginx \
@@ -201,6 +201,10 @@ RUN chmod 550 /usr/local/sbin/nginx
 COPY --from=build-ffmpeg /usr/local /usr/local
 COPY --from=build-ffmpeg /lib /lib
 COPY --from=build-ffmpeg /usr/lib /usr/lib
+
+RUN apk update && \
+    apk --no-cache add \
+    libressl-dev
 
 # Set up config file
 ADD nginx /etc/nginx
